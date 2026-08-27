@@ -1,0 +1,364 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --ground:#ebeeec; --surface:#fbfcfb; --surface-2:#f3f6f5;
+    --ink:#161a1c; --muted:#5c6569; --line:#d4d9d8; --line-soft:#e3e7e6;
+    --accent:#136074; --accent-ink:#ffffff; --accent-soft:#d8ecef;
+    --warn:#b5722a; --warn-soft:#f3e7d6;
+    --shadow:0 1px 0 var(--line);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0f1416; --surface:#161d20; --surface-2:#1c2528;
+      --ink:#e8eeef; --muted:#8a9598; --line:#2a3438; --line-soft:#222b2e;
+      --accent:#4fb3c9; --accent-ink:#0f1416; --accent-soft:#16323b;
+      --warn:#d49a55; --warn-soft:#2c2418;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0f1416; --surface:#161d20; --surface-2:#1c2528;
+    --ink:#e8eeef; --muted:#8a9598; --line:#2a3438; --line-soft:#222b2e;
+    --accent:#4fb3c9; --accent-ink:#0f1416; --accent-soft:#16323b;
+    --warn:#d49a55; --warn-soft:#2c2418;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--ground); color:var(--ink);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;
+    font-size:15px; line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+  .display{font-family:"Bricolage Grotesque",system-ui,sans-serif}
+
+  .wrap{max-width:1120px; margin:0 auto; padding:28px 28px 80px}
+
+  /* ── Masthead, like a bill of lading ── */
+  .masthead{
+    border-top:3px solid var(--ink);
+    border-bottom:1px solid var(--line);
+    padding:22px 0 26px;
+    display:grid; grid-template-columns:1fr auto; gap:20px; align-items:end;
+  }
+  .masthead h1{
+    margin:0; font-family:"Bricolage Grotesque",sans-serif;
+    font-weight:700; font-size:clamp(34px,5.5vw,54px);
+    line-height:.98; letter-spacing:-.02em; text-wrap:balance;
+  }
+  .masthead h1 em{font-style:normal; color:var(--accent)}
+  .masthead .lede{color:var(--muted); max-width:42ch; margin-top:10px; font-size:15px}
+  .masthead .stamp{
+    text-align:right; color:var(--muted); font-family:"IBM Plex Mono",monospace;
+    font-size:12px; line-height:1.7; letter-spacing:.02em;
+  }
+  .masthead .stamp b{color:var(--ink); font-weight:500}
+
+  .meta-row{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+    border-bottom:1px solid var(--line); margin-bottom:34px;
+  }
+  .meta-row .cell{padding:14px 0; border-right:1px dashed var(--line)}
+  .meta-row .cell:last-child{border-right:0}
+  .meta-row .k{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted)}
+  .meta-row .v{font-size:18px; font-weight:600; margin-top:2px; font-variant-numeric:tabular-nums}
+
+  /* ── Controls ── */
+  .controls{
+    position:sticky; top:0; z-index:5;
+    background:color-mix(in srgb, var(--ground) 88%, transparent);
+    backdrop-filter:blur(8px);
+    margin:0 -28px 26px; padding:14px 28px;
+    border-bottom:1px solid var(--line);
+    display:flex; flex-wrap:wrap; gap:20px; align-items:center;
+  }
+  .filter-group{display:flex; align-items:center; gap:8px}
+  .filter-group .label{
+    font-family:"IBM Plex Mono",monospace; font-size:11px;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-right:2px;
+  }
+  .chips{display:flex; gap:6px; flex-wrap:wrap}
+  .chip{
+    border:1px solid var(--line); background:var(--surface);
+    color:var(--ink); font:inherit; font-size:13px; font-weight:500;
+    padding:6px 12px; border-radius:999px; cursor:pointer;
+    transition:background .15s, border-color .15s, color .15s;
+  }
+  .chip:hover{border-color:var(--accent)}
+  .chip.active{background:var(--ink); color:var(--ground); border-color:var(--ink)}
+  .count{margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
+
+  /* ── Section headers ── */
+  .section{margin-bottom:34px}
+  .section-head{
+    display:flex; align-items:baseline; gap:14px;
+    border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:16px;
+  }
+  .section-head h2{margin:0; font-family:"Bricolage Grotesque",sans-serif; font-weight:700; font-size:22px; letter-spacing:-.01em}
+  .section-head .aud-tag{
+    font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent);
+  }
+  .section-head .rule{flex:1; height:1px; background:var(--line-soft)}
+
+  /* ── Offer grid ── */
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:14px}
+  .card{
+    background:var(--surface); border:1px solid var(--line);
+    padding:18px 18px 16px; display:flex; flex-direction:column; gap:10px;
+    position:relative; transition:border-color .15s, transform .15s;
+  }
+  .card:hover{border-color:var(--accent); transform:translateY(-1px)}
+  .card-top{display:flex; align-items:center; justify-content:space-between; gap:8px}
+  .code{font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.06em; color:var(--muted); font-weight:500}
+  .status{font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--warn); background:var(--warn-soft); padding:2px 7px; border-radius:3px}
+  .headline{font-family:"Bricolage Grotesque",sans-serif; font-weight:700; font-size:17px; line-height:1.25; letter-spacing:-.005em; text-wrap:balance; margin:2px 0 0}
+  .headline .sub{display:block; font-family:"IBM Plex Sans",sans-serif; font-weight:500; font-size:14px; color:var(--muted); margin-top:4px}
+  .body{font-size:13.5px; color:var(--muted); line-height:1.5}
+  .footer{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-top:auto; padding-top:10px; border-top:1px dashed var(--line-soft);
+  }
+  .cta{
+    font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:500;
+    color:var(--accent); letter-spacing:.01em;
+  }
+  .cta .h1label{color:var(--muted); margin-right:6px}
+  .copy{
+    border:1px solid var(--line); background:transparent; color:var(--muted);
+    font:inherit; font-size:11px; font-family:"IBM Plex Mono",monospace;
+    padding:5px 10px; border-radius:4px; cursor:pointer; transition:all .15s;
+    white-space:nowrap;
+  }
+  .copy:hover{border-color:var(--accent); color:var(--accent)}
+  .copy.ok{background:var(--accent); color:var(--accent-ink); border-color:var(--accent)}
+
+  .empty{grid-column:1/-1; text-align:center; color:var(--muted); padding:48px 0; font-size:14px}
+
+  /* ── Footer ── */
+  .pagefoot{
+    margin-top:44px; padding-top:18px; border-top:1px solid var(--line);
+    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace; font-size:11px; color:var(--muted); letter-spacing:.04em;
+  }
+  .pagefoot a{color:var(--accent); text-decoration:none}
+
+  @media (max-width:640px){
+    .wrap{padding:20px 16px 64px}
+    .controls{margin:0 -16px 22px; padding:12px 16px}
+    .masthead{grid-template-columns:1fr}
+    .masthead .stamp{text-align:left}
+    .meta-row{grid-template-columns:repeat(2,1fr)}
+    .meta-row .cell:nth-child(2){border-right:0}
+  }
+</style>
+
+<main class="wrap">
+
+  <header class="masthead">
+    <div>
+      <h1>Контент-<em>завод</em></h1>
+      <p class="lede">Манфест офферов по логистике из Китая — 27 готовых текстов под три площадки и три аудитории. Фильтруй, читай, копируй в один клик.</p>
+    </div>
+    <div class="stamp">
+      <b>PA-FINANCE / GIT_HUB</b><br>
+      MANIFEST № CZ-2026-08-27<br>
+      ORIGIN: <b>CN</b> &nbsp; DEST: <b>RU</b><br>
+      ISSUED: 2026-08-27
+    </div>
+  </header>
+
+  <section class="meta-row">
+    <div class="cell"><div class="k">Офферов</div><div class="v">27</div></div>
+    <div class="cell"><div class="k">Площадок</div><div class="v">3</div></div>
+    <div class="cell"><div class="k">Аудиторий</div><div class="v">3</div></div>
+    <div class="cell"><div class="k">Статус</div><div class="v" style="color:var(--warn)">черновик</div></div>
+  </section>
+
+  <div class="controls" id="controls">
+    <div class="filter-group">
+      <span class="label">Площадка</span>
+      <div class="chips" data-filter="platform">
+        <button class="chip active" data-val="all">все</button>
+        <button class="chip" data-val="target">таргет</button>
+        <button class="chip" data-val="context">контекст</button>
+        <button class="chip" data-val="seo">SEO</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <span class="label">Аудитория</span>
+      <div class="chips" data-filter="audience">
+        <button class="chip active" data-val="all">все</button>
+        <button class="chip" data-val="urlica">юрлица</button>
+        <button class="chip" data-val="sellers">селлеры</button>
+        <button class="chip" data-val="optoviki">оптовики</button>
+      </div>
+    </div>
+    <div class="count" id="count"></div>
+  </div>
+
+  <div id="catalog"></div>
+
+  <footer class="pagefoot">
+    <span>git_hub/ · content-factory · 27 offers · 3 platforms × 3 audiences</span>
+    <span>метрики по офферам — в content-log.md</span>
+  </footer>
+</main>
+
+<script>
+  const PLATFORMS={
+    target:{label:"Таргет",code:"TG"},
+    context:{label:"Контекст",code:"CT"},
+    seo:{label:"SEO",code:"SE"}
+  };
+  const AUDIENCES={
+    urlica:{label:"Юрлица",code:"Ю"},
+    sellers:{label:"Селлеры",code:"С"},
+    optoviki:{label:"Оптовики",code:"О"}
+  };
+
+  // offer shape: {platform, audience, headline, sub, body, cta, ctaLabel}
+  const OFFERS=[
+    // ── TARGET / Юрлица ──
+    {platform:"target",audience:"urlica",n:1,headline:"Везёте товар из Китая? Считаем стоимость за 15 минут",body:"Контейнерная и сборная доставка из Китая под юрлицо. Таможня «под ключ», оплата по безналу с НДС, закрытый экспорт. Срок 18–25 дней от фабрики до склада в РФ. Без скрытых сборов — финальную цену фиксируем в договоре.",cta:"Рассчитать стоимость доставки"},
+    {platform:"target",audience:"urlica",n:2,headline:"Таможенная очистка из Китая без простоев на СВХ",body:"Оформляем импорт под ваш код ТН ВЭД: подбор кода, сертификаты, декларация. СВХ в Москве и Владивостоке. Выпуск декларации в срок, штрафы и корректировки — за наш счёт по договору.",cta:"Получить расчёт таможни"},
+    {platform:"target",audience:"urlica",n:3,headline:"Склад в Гуанчжоу для консолидации ваших поставок",body:"Принимаем груз от разных фабрик, проверяем упаковку, пересобираем под отправку. Хранение 7 дней бесплатно. Фото и видео перед отгрузкой. Отправка раз в неделю — без ожидания полной сборки.",cta:"Узнать условия хранения"},
+    // ── TARGET / Селлеры ──
+    {platform:"target",audience:"sellers",n:1,headline:"Доставка из Китая на склад Wildberries и Ozon",body:"Везём товар от фабрики напрямую на склад маркетплейса по FBO. Маркировка, штрихкоды, упаковка под требования площадки. Срок 20–28 дней. Цена от 2,5 $/кг сборным грузом. Без минимальной партии — от 1 коробки.",cta:"Рассчитать ставку за кг"},
+    {platform:"target",audience:"sellers",n:2,headline:"Выкуп товара с 1688/Taobao и проверка перед отправкой",body:"Оплачиваем товар поставщику, забираем с фабрики, проверяем на брак и пересорт. Фото каждой партии. Доставляем сборным грузом — дорого отправлять не придётся. Комиссия за выкуп 3%.",cta:"Оставить ссылку на товар"},
+    {platform:"target",audience:"sellers",n:3,headline:"Крупногабарит и жидкость из Китая для селлеров",body:"Везём то, что другие отказываются: мебель, автозапчасти, косметику в фабричной упаковке. Отдельная линия под негабарит, упаковка под требования маркетплейса. Срок 25–35 дней. Цена индивидуально — прислали ТТХ, получили ставку.",cta:"Прислать характеристики груза"},
+    // ── TARGET / Оптовики ──
+    {platform:"target",audience:"optoviki",n:1,headline:"Оптовые партии из Китая от 500 кг — одна ставка до РФ",body:"Доставка сборных и генеральных партий от 500 кг. Цена от 1,8 $/кг при объёме. Фиксируем ставку на весь объём, без доплат за «вес-объём». Таможня и доставка до склада включены. Отгружаем партиями по графику.",cta:"Получить оптовый тариф"},
+    {platform:"target",audience:"optoviki",n:2,headline:"Регулярные поставки из Китая под оптовый склад",body:"Настраиваем ритм поставок под ваш склад: раз в 2 недели или месяц. Резерв места на складе в Китае, плановая отправка. Цена стабильна на 3 месяца — пересчёт только по курсу. Без срывов сроков по нашей вине — штраф в договоре.",cta:"Запросить график поставок"},
+    {platform:"target",audience:"optoviki",n:3,headline:"Найдём фабрику в Китае под ваш товар и отвезём",body:"Подбираем производителя под ТЗ, проверяем фабрику, образцы. Заключаем контракт, контролируем производство, отгружаем. От запроса до товара на вашем складе — 45–60 дней. Без предоплаты фабрике из вашего кармана.",cta:"Описать товар для поиска"},
+
+    // ── CONTEXT / Юрлица ──
+    {platform:"context",audience:"urlica",n:1,headline:"Доставка грузов из Китая под юрлицо",sub:"Таможня включена",body:"Контейнерная и сборная доставка. Оплата по безналу с НДС. Срок 18–25 дней.",cta:"Рассчитать стоимость"},
+    {platform:"context",audience:"urlica",n:2,headline:"Таможенное оформление из Китая",sub:"Без простоев на СВХ",body:"Подберём код ТН ВЭД, сертификаты, декларацию. Выпуск в срок. Москва, Владивосток.",cta:"Получить расчёт"},
+    {platform:"context",audience:"urlica",n:3,headline:"Склад консолидации в Гуанчжоу",sub:"7 дней бесплатно",body:"Принимаем груз от разных фабрик, проверяем, отправляем раз в неделю. Фото перед отгрузкой.",cta:"Узнать условия"},
+    // ── CONTEXT / Селлеры ──
+    {platform:"context",audience:"sellers",n:1,headline:"Доставка из Китая для селлеров",sub:"На склад WB и Ozon",body:"FBO-доставка, маркировка и упаковка под маркетплейс. От 2,5 $/кг, от 1 коробки.",cta:"Рассчитать ставку"},
+    {platform:"context",audience:"sellers",n:2,headline:"Выкуп товара с 1688 и Taobao",sub:"Проверка на брак",body:"Оплачиваем, забираем, проверяем, отправляем сборным грузом. Фото каждой партии.",cta:"Прислать ссылку"},
+    {platform:"context",audience:"sellers",n:3,headline:"Крупногабарит из Китая для селлеров",sub:"Мебель, автозапчасти",body:"Отдельная линия под негабарит. Упаковка под требования маркетплейса. Срок 25–35 дней.",cta:"Прислать ТТХ"},
+    // ── CONTEXT / Оптовики ──
+    {platform:"context",audience:"optoviki",n:1,headline:"Оптовые поставки из Китая от 500 кг",sub:"Одна ставка до РФ",body:"Сборные и генеральные партии. От 1,8 $/кг. Таможня включена. Без доплат за вес-объём.",cta:"Получить тариф"},
+    {platform:"context",audience:"optoviki",n:2,headline:"Регулярные поставки из Китая",sub:"Под ваш склад",body:"Поставка раз в 2 недели или месяц. Цена фиксирована на 3 месяца. Штраф за срыв срока.",cta:"Запросить график"},
+    {platform:"context",audience:"optoviki",n:3,headline:"Поиск поставщика в Китае",sub:"Под ваш товар",body:"Подберём фабрику, образцы, контракт. От запроса до склада — 45–60 дней.",cta:"Описать товар"},
+
+    // ── SEO / Юрлица ──
+    {platform:"seo",audience:"urlica",n:1,headline:"Доставка грузов из Китая для юрлиц — таможня под ключ",body:"Контейнерная и сборная доставка из Китая. Оплата по безналу с НДС, срок 18–25 дней. Рассчитайте стоимость за 15 минут.",cta:"Доставка грузов из Китая для юридических лиц",ctaLabel:"H1"},
+    {platform:"seo",audience:"urlica",n:2,headline:"Таможенное оформление импорта из Китая — без простоев",body:"Оформляем импорт под ваш код ТН ВЭД: подбор кода, сертификаты, декларация. СВХ в Москве и Владивостоке.",cta:"Таможенное оформление грузов из Китая",ctaLabel:"H1"},
+    {platform:"seo",audience:"urlica",n:3,headline:"Склад консолидации в Гуанчжоу — 7 дней бесплатно",body:"Принимаем груз от разных фабрик, проверяем упаковку, отправляем раз в неделю. Фото и видео перед отгрузкой.",cta:"Склад консолидации в Китае",ctaLabel:"H1"},
+    // ── SEO / Селлеры ──
+    {platform:"seo",audience:"sellers",n:1,headline:"Доставка из Китая на склад Wildberries и Ozon",body:"FBO-доставка, маркировка и упаковка под маркетплейс. От 2,5 $/кг, от 1 коробки. Срок 20–28 дней.",cta:"Доставка товаров из Китая для селлеров маркетплейсов",ctaLabel:"H1"},
+    {platform:"seo",audience:"sellers",n:2,headline:"Выкуп товара с 1688 и Taobao с проверкой и доставкой",body:"Оплачиваем поставщику, забираем с фабрики, проверяем на брак. Фото каждой партии. Доставка сборным грузом.",cta:"Выкуп товаров с 1688 и Taobao под ключ",ctaLabel:"H1"},
+    {platform:"seo",audience:"sellers",n:3,headline:"Крупногабаритный груз из Китая для селлеров",body:"Мебель, автозапчасти, косметику в фабричной упаковке. Отдельная линия, упаковка под маркетплейс. Срок 25–35 дней.",cta:"Доставка крупногабарита из Китая для селлеров",ctaLabel:"H1"},
+    // ── SEO / Оптовики ──
+    {platform:"seo",audience:"optoviki",n:1,headline:"Оптовые поставки из Китая от 500 кг — одна ставка",body:"Сборные и генеральные партии от 1,8 $/кг. Таможня и доставка включены, без доплат за вес-объём.",cta:"Оптовые поставки товаров из Китая",ctaLabel:"H1"},
+    {platform:"seo",audience:"optoviki",n:2,headline:"Регулярные поставки из Китая под оптовый склад",body:"Поставка раз в 2 недели или месяц. Цена стабильна 3 месяца, штраф за срыв срока по нашей вине.",cta:"Регулярные поставки из Китая по графику",ctaLabel:"H1"},
+    {platform:"seo",audience:"optoviki",n:3,headline:"Поиск поставщика в Китае под ваш товар",body:"Подбираем фабрику, проверяем, образцы, контракт. От запроса до товара на складе 45–60 дней.",cta:"Поиск поставщика и фабрики в Китае",ctaLabel:"H1"}
+  ];
+
+  const state={platform:"all",audience:"all"};
+  let saved=null;
+  try{saved=JSON.parse(localStorage.getItem("cz-filter"))}catch(e){}
+
+  function code(o){
+    const p=PLATFORMS[o.platform].code, a=AUDIENCES[o.audience].code;
+    return `${p}-${a}-${String(o.n).padStart(2,"0")}`;
+  }
+
+  function visible(o){
+    return (state.platform==="all"||state.platform===o.platform)
+        && (state.audience==="all"||state.audience===o.audience);
+  }
+
+  function cardHTML(o){
+    const ctaLabel=o.ctaLabel?`<span class="h1label">${o.ctaLabel}:</span>`:"";
+    const sub=o.sub?`<span class="sub">${o.sub}</span>`:"";
+    const text=`${o.headline}${sub}\n\n${o.body}\n\nCTA: ${o.cta}`;
+    return `<article class="card" data-platform="${o.platform}" data-audience="${o.audience}">
+      <div class="card-top">
+        <span class="code">${code(o)}</span>
+        <span class="status">черновик</span>
+      </div>
+      <h3 class="headline">${o.headline}${sub}</h3>
+      <p class="body">${o.body}</p>
+      <div class="footer">
+        <span class="cta">${ctaLabel}${o.cta}</span>
+        <button class="copy" data-text="${text.replace(/"/g,'&quot;')}">копировать</button>
+      </div>
+    </article>`;
+  }
+
+  function render(){
+    const cat=document.getElementById("catalog");
+    const list=OFFERS.filter(visible);
+    document.getElementById("count").textContent=`${list.length} / 27`;
+    if(list.length===0){cat.innerHTML=`<div class="empty">Под фильтр ничего не попало.</div>`;return}
+
+    // group by platform (in fixed order), then audience
+    const order=["target","context","seo"];
+    const audOrder=["urlica","sellers","optoviki"];
+    let html="";
+    for(const p of order){
+      const pList=list.filter(o=>o.platform===p);
+      if(!pList.length) continue;
+      // by audience
+      for(const a of audOrder){
+        const aList=pList.filter(o=>o.audience===a);
+        if(!aList.length) continue;
+        html+=`<section class="section">
+          <div class="section-head">
+            <h2>${PLATFORMS[p].label}</h2>
+            <span class="aud-tag">${AUDIENCES[a].label}</span>
+            <span class="rule"></span>
+          </div>
+          <div class="grid">${aList.map(cardHTML).join("")}</div>
+        </section>`;
+      }
+    }
+    cat.innerHTML=html;
+  }
+
+  // chips
+  document.querySelectorAll('[data-filter]').forEach(group=>{
+    const key=group.dataset.filter;
+    group.querySelectorAll('.chip').forEach(chip=>{
+      chip.addEventListener('click',()=>{
+        group.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+        chip.classList.add('active');
+        state[key]=chip.dataset.val;
+        try{localStorage.setItem("cz-filter",JSON.stringify(state))}catch(e){}
+        render();
+      });
+    });
+  });
+
+  // restore saved filter
+  if(saved){
+    for(const key of ["platform","audience"]){
+      if(saved[key] && saved[key]!=="all"){
+        state[key]=saved[key];
+        const g=document.querySelector(`[data-filter="${key}"]`);
+        g.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c.dataset.val===saved[key]));
+      }
+    }
+  }
+
+  // copy
+  document.getElementById("catalog").addEventListener('click',async(e)=>{
+    const btn=e.target.closest('.copy'); if(!btn) return;
+    try{
+      await navigator.clipboard.writeText(btn.dataset.text);
+      const old=btn.textContent; btn.textContent="скопировано"; btn.classList.add('ok');
+      setTimeout(()=>{btn.textContent=old; btn.classList.remove('ok')},1400);
+    }catch(err){
+      btn.textContent="ошибка"; setTimeout(()=>btn.textContent="копировать",1400);
+    }
+  });
+
+  render();
+</script>
